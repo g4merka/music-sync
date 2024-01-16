@@ -2,21 +2,26 @@ const express = require("express") //подключение Express.JS
 const fs = require("fs")
 const app = express() //создаем объект приложения
 
-const urlencodedParser = express.urlencoded({extended: false}) // создали парсер данных application/x-www-form-urlencoded для получения отправленных данных
-                                                        //↑ объект - результат парсинга будет представлять набор пар ключ-значение, а каждое значение может быть представлено в виде строки или массива
-app.get("/users/:userId", function(req, res){
-    res.send("userId: " + req.params["userId"]) // значение указывается в конце маршрута ../users/<int>
+const fileRouter = express.Router(); //определяем роутер
+
+app.use("/about", function (_, res){
+    res.sendFile(__dirname + "/public/about.html")
+})
+//определяем маршруты и обработчики внутри роутера
+fileRouter.use("/add", function(req, res){
+    res.send("Добавление файла")
+})
+fileRouter.use("/:id", function(req, res){
+    res.send(`Файл ${req.params.id}`)
+})
+fileRouter.use("/", function(req, res){
+    res.send("Список файлов")
 })
 
-app.get("/type/:media.:ext", function(req, res){ // запрос: ../type/<media>.<ext>
-    const media = req.params["media"]
-    const ext = req.params['ext']
-    res.send(`Полное имя файла: ${media}.${ext}`)
-})
-app.get("/type/:media/extension:ext", function(req, res){ // запрос: ../type/<media>/extension/<ext>
-    const media = req.params["media"]
-    const ext = req.params['ext']
-    res.send(`Тип: ${media} Расширение: ${ext}`)
+app.use("/album", fileRouter) //сопоставляем роутер с конченой точкой /album
+
+app.use("/", function(req, res){
+    res.send("Главная")
 })
 
 app.listen(3000, () => console.log("Сервер запущен...")) //прослушиваем подключения на 3000 порту
