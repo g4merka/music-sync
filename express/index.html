@@ -6,12 +6,27 @@
 </head>
 <body>
     <h1>Введите данные</h1>
-    <form method="post">
+    <form id="userData" action="/user" method="post">
         <label>Имя</label><br>
         <input type="text" name="userName" /><br>
         <label>Возраст</label><br>
         <input type="number" name="userAge" /><br><br>
         <input type="submit" value="Отправить" />
     </form>
+    <script>
+        const userForm = document.getElementById("myForm"); // браузер создает DOM при загрузке стр. и помещает в document. Это позволяет управлять HTML из JS
+        userForm.addEventListener("submit", async (e)=>{
+            e.preventDefault(); // отменяет действие по умолчанию
+            const username = userForm.userName.value
+            const userage = userForm.userAge.value
+            const response = await fetch("/user", {
+                method:"POST",
+                headers:{"Content-Type": "application/json"},
+                body: JSON.stringify({name: username, age: userage})
+            })
+            const resText = await response.text()
+            cosole.log(resText)
+        })
+    </script>
 </body>
 </html>
